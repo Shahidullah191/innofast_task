@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:innofast_task/routes/routes.dart';
 import 'package:innofast_task/routes/routes_name.dart';
+import 'package:innofast_task/utils/app_color.dart';
 import 'package:innofast_task/utils/app_constants.dart';
 import 'helper/get_di.dart' as di;
 
@@ -30,6 +31,11 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: AppConstants.appName,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        primaryColor: AppColor.primary,
+        fontFamily: 'Roboto',
+      ),
       initialRoute: RoutesName.getSplashScreen(),
       getPages: AppRoutes.appRoutes(),
       defaultTransition: Transition.fadeIn,

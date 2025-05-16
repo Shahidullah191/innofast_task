@@ -1,11 +1,12 @@
 class Dimensions {
-  static double fontSizeTen = 10;
-  static double fontSizeTwelve = 12;
-  static double fontSizeFourteen = 14;
-  static double fontSizeFifteen = 15;
-  static double fontSizeSixteen = 16;
-  static double fontSizeEighteen = 18;
-  static double fontSizeTwentyFour = 24;
+  static const double fontSizeTen = 10;
+  static const double fontSizeTwelve = 12;
+  static const double fontSizeFourteen = 14;
+  static const double fontSizeFifteen = 15;
+  static const double fontSizeSixteen = 16;
+  static const double fontSizeEighteen = 18;
+  static const double fontSizeTwenty = 20;
+  static const double fontSizeTwentyFour = 24;
   static const double fontSizeThirty = 30;
 
   static const double paddingSizeFive = 5;

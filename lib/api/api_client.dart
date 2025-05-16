@@ -5,30 +5,22 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:get/get_connect/http/src/request/request.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:innofast_task/api/error_response.dart';
-import 'package:innofast_task/utils/app_constants.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class ApiClient extends GetxService {
   final String appBaseUrl;
-  final SharedPreferences sharedPreferences;
   static final String noInternetMessage = 'connection_to_api_server_failed'.tr;
   final int timeoutInSeconds = 30;
 
   String? token;
   late Map<String, String> _mainHeaders;
 
-  ApiClient({required this.appBaseUrl, required this.sharedPreferences}) {
-    token = sharedPreferences.getString(AppConstants.token);
-    if(kDebugMode) {
-      debugPrint('Token: $token');
-    }
-    updateHeader(token);
+  ApiClient({required this.appBaseUrl}) {
+    updateHeader();
   }
 
-  void updateHeader(String? token) {
+  void updateHeader() {
     _mainHeaders = {
       'Content-Type': 'application/json; charset=UTF-8',
       'Accept': 'application/json',
@@ -44,116 +36,6 @@ class ApiClient extends GetxService {
         Uri.parse(appBaseUrl+uri,),
         headers: headers ?? _mainHeaders,
 
-      ).timeout(Duration(seconds: timeoutInSeconds));
-      return handleResponse(response, uri);
-    } on SocketException {
-      return Response(statusCode: 1, statusText: 'No internet connection');
-    } on TimeoutException {
-      return Response(statusCode: 1, statusText: 'Connection timeout');
-    } on FormatException {
-      return Response(statusCode: 1, statusText: 'Bad response format');
-    } catch (e, stack) {
-      if (kDebugMode) {
-        log('Unhandled exception during API call: $e\n$stack');
-      }
-      return Response(statusCode: 1, statusText: 'Unexpected error occurred');
-    }
-  }
-
-  Future<Response> postData(String uri, dynamic body, {Map<String, String>? headers}) async {
-    try {
-      if(kDebugMode) {
-        debugPrint('====> API Call: $uri\nHeader: $_mainHeaders');
-        debugPrint('====> API Body: $body');
-      }
-      http.Response response = await http.post(
-        Uri.parse(appBaseUrl+uri),
-        body: json.encode(body),
-        headers: headers ?? _mainHeaders,
-      ).timeout(Duration(seconds: timeoutInSeconds));
-      return handleResponse(response, uri);
-    } on SocketException {
-      return Response(statusCode: 1, statusText: 'No internet connection');
-    } on TimeoutException {
-      return Response(statusCode: 1, statusText: 'Connection timeout');
-    } on FormatException {
-      return Response(statusCode: 1, statusText: 'Bad response format');
-    } catch (e, stack) {
-      if (kDebugMode) {
-        log('Unhandled exception during API call: $e\n$stack');
-      }
-      return Response(statusCode: 1, statusText: 'Unexpected error occurred');
-    }
-  }
-
-  Future<Response> postMultipartData(String uri, Map<String, String> body, List<MultipartBody> multipartBody, {Map<String, String>? headers}) async {
-    try {
-      if(kDebugMode) {
-        debugPrint('====> API Call: $uri\nHeader: $_mainHeaders');
-        debugPrint('====> API Body: $body with ${multipartBody.length} files');
-      }
-      http.MultipartRequest request = http.MultipartRequest('POST', Uri.parse(appBaseUrl+uri));
-      request.headers.addAll(headers ?? _mainHeaders);
-      for(MultipartBody multipart in multipartBody) {
-        if(multipart.file != null) {
-          Uint8List list = await multipart.file!.readAsBytes();
-          request.files.add(http.MultipartFile(
-            multipart.key, multipart.file!.readAsBytes().asStream(), list.length,
-            filename: '${DateTime.now().toString()}.png',
-          ));
-        }
-      }
-      request.fields.addAll(body);
-      http.Response response = await http.Response.fromStream(await request.send());
-      return handleResponse(response, uri);
-    } on SocketException {
-      return Response(statusCode: 1, statusText: 'No internet connection');
-    } on TimeoutException {
-      return Response(statusCode: 1, statusText: 'Connection timeout');
-    } on FormatException {
-      return Response(statusCode: 1, statusText: 'Bad response format');
-    } catch (e, stack) {
-      if (kDebugMode) {
-        log('Unhandled exception during API call: $e\n$stack');
-      }
-      return Response(statusCode: 1, statusText: 'Unexpected error occurred');
-    }
-  }
-
-  Future<Response> putData(String uri, dynamic body, {Map<String, String>? headers}) async {
-    try {
-      if(kDebugMode) {
-        debugPrint('====> API Call: $uri\nHeader: $_mainHeaders');
-        debugPrint('====> API Body: $body');
-      }
-      http.Response response = await http.put(
-        Uri.parse(appBaseUrl+uri),
-        body: jsonEncode(body),
-        headers: headers ?? _mainHeaders,
-      ).timeout(Duration(seconds: timeoutInSeconds));
-      return handleResponse(response, uri);
-    } on SocketException {
-      return Response(statusCode: 1, statusText: 'No internet connection');
-    } on TimeoutException {
-      return Response(statusCode: 1, statusText: 'Connection timeout');
-    } on FormatException {
-      return Response(statusCode: 1, statusText: 'Bad response format');
-    } catch (e, stack) {
-      if (kDebugMode) {
-        log('Unhandled exception during API call: $e\n$stack');
-      }
-      return Response(statusCode: 1, statusText: 'Unexpected error occurred');
-    }
-  }
-
-  Future<Response> deleteData(String uri, {Map<String, String>? headers}) async {
-    try {
-      if(kDebugMode) {
-        debugPrint('====> API Call: $uri\nHeader: $_mainHeaders');
-      }
-      http.Response response = await http.delete(
-        Uri.parse(appBaseUrl+uri),
-        headers: headers ?? _mainHeaders,
       ).timeout(Duration(seconds: timeoutInSeconds));
       return handleResponse(response, uri);
     } on SocketException {
@@ -195,11 +77,4 @@ class ApiClient extends GetxService {
     }
     return response0;
   }
-}
-
-class MultipartBody {
-  String key;
-  XFile? file;
-
-  MultipartBody(this.key, this.file);
 }

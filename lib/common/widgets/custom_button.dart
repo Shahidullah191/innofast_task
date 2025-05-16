@@ -1,3 +1,4 @@
+import 'package:innofast_task/utils/app_color.dart';
 import 'package:innofast_task/utils/dimensions.dart';
 import 'package:innofast_task/utils/styles.dart';
 import 'package:flutter/material.dart';
@@ -36,8 +37,8 @@ class CustomButton extends StatelessWidget {
             ),
             const SizedBox(width: Dimensions.paddingSizeTen),
 
-            Text('Loading', style: robotoBold.copyWith(color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: Dimensions.fontSizeSixteen)),
-          ]) : Text(text, style: robotoBold.copyWith(color: textColor ?? Theme.of(context).textTheme.bodyLarge?.color, fontSize: Dimensions.fontSizeSixteen)),
+            Text('Loading', style: robotoBold.copyWith(color: AppColor.white, fontSize: Dimensions.fontSizeSixteen)),
+          ]) : Text(text, style: robotoBold.copyWith(color: textColor ?? AppColor.white, fontSize: Dimensions.fontSizeSixteen)),
         ),
       ),
     );

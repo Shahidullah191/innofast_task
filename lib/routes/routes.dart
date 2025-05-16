@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:innofast_task/common/no_internet/no_internet_screen.dart';
+import 'package:innofast_task/feature/github/models/repository_model.dart';
 import 'package:innofast_task/feature/github/screens/profile_screen.dart';
 import 'package:innofast_task/feature/github/screens/repository_details_screen.dart';
 import 'package:innofast_task/feature/github/screens/repository_list_screen.dart';
@@ -25,7 +29,18 @@ class AppRoutes {
 
     GetPage(
       name: RoutesName.repositoryDetailsScreen,
-      page: () => const RepositoryDetailsScreen(),
+      page: () {
+        RepositoryModel? repository;
+        if(Get.parameters['repository'] != 'null') {
+          repository = RepositoryModel.fromJson(jsonDecode(utf8.decode(base64Url.decode(Get.parameters['repository']!.replaceAll(' ', '+')))));
+        }
+        return RepositoryDetailScreen(repository: repository!);
+      }
+    ),
+
+    GetPage(
+      name: RoutesName.noInternetScreen,
+      page: () => const NoInternetScreen(),
     ),
 
   ];

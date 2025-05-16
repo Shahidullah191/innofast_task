@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomAssetImage extends StatelessWidget {
   final String image;
@@ -12,12 +11,6 @@ class CustomAssetImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isSvg = image.contains('.svg', image.length - '.svg'.length);
-    return isSvg ? SvgPicture.asset(
-      image,
-      width: height, height: width,
-      colorFilter: color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
-      fit: fit!,
-    ) : Image.asset(image, fit: fit, width: width, height: height, color: color);
+    return Image.asset(image, fit: fit, width: width, height: height, color: color);
   }
 }

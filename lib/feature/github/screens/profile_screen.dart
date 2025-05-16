@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:innofast_task/common/widgets/custom_app_bar.dart';
+import 'package:innofast_task/common/widgets/custom_button.dart';
+import 'package:innofast_task/common/widgets/custom_network_image.dart';
 import 'package:innofast_task/feature/github/controller/github_controller.dart';
+import 'package:innofast_task/routes/routes_name.dart';
+import 'package:innofast_task/utils/dimensions.dart';
+import 'package:innofast_task/utils/styles.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -14,7 +19,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    Get.find<GithubController>().getProfile(username: 'Shahidullah191');
+    Get.find<GithubController>().getProfile();
   }
 
   @override
@@ -26,50 +31,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
         final profile = githubController.profileModel;
 
         return githubController.profileModel != null ? SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundImage: NetworkImage(profile?.avatarUrl ?? ''),
+          padding: const EdgeInsets.all(Dimensions.paddingSizeFifteen),
+          child: Column(children: [
+
+            ClipOval(
+              child: CustomNetworkImage(
+                image: profile?.avatarUrl ?? '',
+                width: 100, height: 100,
               ),
-              const SizedBox(height: 16),
-              Text(profile?.name ?? '', style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 8),
-              if (profile?.bio != null)
-                Text(profile!.bio!, style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.center),
-              const SizedBox(height: 12),
-              if (profile?.location != null)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.location_on_outlined, size: 18),
-                    const SizedBox(width: 4),
-                    Text(profile!.location!),
-                  ],
-                ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildStat('Followers', profile?.followers?.toString() ?? '0'),
-                  _buildStat('Following', profile?.following?.toString() ?? '0'),
-                  _buildStat('Repos', profile?.publicRepos?.toString() ?? '0'),
-                ],
-              ),
-            ],
-          ),
-        ) : const Center(child: CircularProgressIndicator());
+            ),
+            const SizedBox(height: 16),
+
+            Text(profile?.name ?? '', style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeTwenty)),
+            const SizedBox(height: 8),
+
+            Text(profile?.bio ?? '', style: robotoRegular.copyWith(color: Theme.of(context).disabledColor), textAlign: TextAlign.center),
+            const SizedBox(height: 12),
+
+            profile?.location != null ? Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.location_on_outlined, size: 18, color: Theme.of(context).disabledColor),
+                const SizedBox(width: 4),
+                Text(profile?.location ?? '', style: robotoRegular.copyWith(color: Theme.of(context).disabledColor)),
+              ],
+            ) : const SizedBox(),
+            const SizedBox(height: 16),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _countWidget(title: 'Followers', value: profile?.followers?.toString() ?? '0'),
+                _countWidget(title: 'Following', value: profile?.following?.toString() ?? '0'),
+                _countWidget(title: 'Repositories', value: profile?.publicRepos?.toString() ?? '0'),
+              ],
+            ),
+            const SizedBox(height: 30),
+
+            CustomButton(
+              onTap: () {
+                Get.toNamed(RoutesName.getRepositoryListScreen());
+              },
+              text: 'View Repositories',
+            )
+
+          ]),
+        ) : Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor));
       }),
     );
   }
 
-  Widget _buildStat(String title, String value) {
+  Widget _countWidget({required String title, required String value}) {
     return Column(
       children: [
-        Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        Text(value, style: robotoBold.copyWith(fontSize: Dimensions.fontSizeTwenty)),
         const SizedBox(height: 4),
-        Text(title, style: const TextStyle(fontSize: 14)),
+        Text(title, style: robotoRegular.copyWith(color: Theme.of(context).disabledColor)),
       ],
     );
   }
